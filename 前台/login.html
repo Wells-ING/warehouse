@@ -12,14 +12,14 @@
 	<div class="table">
 		<div class="title">仓库管理系统登录</div>
 		<div class="subheading">Warehouse Management System</div>
-		<form action="#" method="GET">
+		<form action="http://localhost:8080/warehouse/login" method="POST">
 			<div class="type">
 				<div class="user"><img src="img/icon_type.png" /></div>
-				<select name="man_type" form="user">
+				<select name="man_type">
 					<option value="">请选择管理员类型</option>
 					<option value="1">超级管理员</option>
 					<option value="2">采购管理员</option>
-					<option value="3">入库管理员</option>
+					<option value="3">出库管理员</option>
 				</select>
 			</div>
 			<div class="userid">
@@ -39,7 +39,6 @@
 				man_typeVal = $('option:selected').val()
 				man_idVal = $("input[type='text']").val()
 				man_pwdVal = $("input[type='password']").val()
-				alert(man_typeVal + ", " + man_idVal + ", " + man_pwdVal)
 			})
 		})
 	</script>
