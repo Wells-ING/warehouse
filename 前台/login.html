@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>管理员登录</title>
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
+	<script src="js/jquery2.1.1.js"></script>
+</head>
+<body>
+	<img class="bg" src="img/body_background.jpg" />
+	<img class="pic" src="img/login_aside.png" />
+	<div class="table">
+		<div class="title">仓库管理系统登录</div>
+		<div class="subheading">Warehouse Management System</div>
+		<form action="#" method="GET">
+			<div class="type">
+				<div class="user"><img src="img/icon_type.png" /></div>
+				<select name="man_type" form="user">
+					<option value="">请选择管理员类型</option>
+					<option value="1">超级管理员</option>
+					<option value="2">采购管理员</option>
+					<option value="3">入库管理员</option>
+				</select>
+			</div>
+			<div class="userid">
+				<div class="user"><img src="img/icon_username.png" /></div>
+				<input type="text" name="man_id" placeholder="请输入管理员ID" />
+			</div>			
+			<div class="password">
+				<div class="user"><img src="img/icon_password.png" /></div>
+				<input type="password" name="man_pwd" placeholder="请输入密码"/>
+			</div>
+			<input type="submit" class="btn" value="登陆"/>
+		</form>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$("input[type='submit']").click(function() {
+				man_typeVal = $('option:selected').val()
+				man_idVal = $("input[type='text']").val()
+				man_pwdVal = $("input[type='password']").val()
+				alert(man_typeVal + ", " + man_idVal + ", " + man_pwdVal)
+			})
+		})
+	</script>
+</body>
+</html>
