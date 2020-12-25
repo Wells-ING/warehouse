@@ -5,6 +5,16 @@ public class Manager {
 	private String man_name;
 	private String man_password;
 	private Integer man_type;
+	public Manager() {
+		
+	}
+	public Manager(Integer man_id, String man_name, String man_password, Integer man_type) {
+		super();
+		this.man_id = man_id;
+		this.man_name = man_name;
+		this.man_password = man_password;
+		this.man_type = man_type;
+	}
 	public Integer getMan_id() {
 		return man_id;
 	}

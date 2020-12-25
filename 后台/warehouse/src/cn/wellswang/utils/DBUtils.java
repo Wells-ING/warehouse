@@ -3,6 +3,9 @@ package cn.wellswang.utils;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 public class DBUtils {
@@ -10,6 +13,7 @@ public class DBUtils {
 	private static String url = "jdbc:mysql://127.0.0.1:3306/warehouse";
 	private static String user = "root";
 	private static String password = "001005";
+	private static Connection conn;
 	/**
 	 * 获取数据库的连接
 	 */
@@ -25,8 +29,34 @@ public class DBUtils {
 		//2.加载驱动
 		Class.forName(driverClass);
 		//3.获取连接
-		Connection con = DriverManager.getConnection(url,user,password);
-		System.out.println(con);
-		return con;
+		conn = DriverManager.getConnection(url,user,password);
+		return conn;
+	}
+	public static void closeConnection(Statement stm) {
+		try {
+			if(stm != null) {
+				stm.close();
+			}
+			if(conn != null) {
+				conn.close();
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void closeConnection(Statement stm, ResultSet rs) {
+		try {
+			if(stm != null) {
+				stm.close();
+			}
+			if(rs != null) {
+				rs.close();
+			}
+			if(conn != null) {
+				conn.close();
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
