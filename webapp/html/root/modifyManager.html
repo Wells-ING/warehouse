@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root修改管理人员信息</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <style>
+        .detail {
+            font-size: 10px;
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><a class="crumb-name" href="./managerManagement.html">管理员管理</a><span class="crumb-step">&gt;</span><span>修改管理员信息</span></div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form>
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>管理员ID</th>
+                                    <td><input class="common-text" id="manId" name="manId" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>管理员类别</th>
+                                    <td>
+                                        <select name="manType" id="manType">
+                                            <option value="0">请选择管理员类型</option>
+                                            <option value="2">采购管理员</option>
+                                            <option value="3">出库管理员</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>管理员姓名</th>
+                                    <td><input class="common-text" id="manName" name="manName" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>管理员密码</th>
+                                    <td><input class="common-text" id="manPassword" name="manPassword" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" id="submit" type="button">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="返回" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+            
+            let showManagerData = {
+                manId : $.cookie('manId')
+            }
+            showManagerDataAjax('/showManagerData', showManagerData)
+            $('#submit').click(function() {
+                let modifyManagerData = {
+                    manId : $('#manId').val(),
+                    manName : $('#manName').val(),
+                    manPassword : $('#manPassword').val(),
+                    manType : $('#manType').val()
+                }
+                modifyManagerAjax('/modifyManager', modifyManagerData)
+            })
+        })
+        function modifyManagerAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(modifyManagerMsg){
+                    if(modifyManagerMsg.isModifySuccess) {
+                        alert(modifyManagerMsg.successMsg)
+                        $(location).attr('href', './managerManagement.html')
+                    } else {
+                        alert(modifyManagerMsg.errorMsg)
+                        $(location).attr('href', './modifyManager.html')
+                    }
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function showManagerDataAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(showManagerMsg){
+                    $('#manId').val(showManagerMsg.manId)
+                    $('#manId').attr('disabled', 'disabled')
+                    $('#manName').val(showManagerMsg.manName)
+                    $('#manPassword').val(showManagerMsg.manPassword)
+                    $('#manType').val(showManagerMsg.manType)
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

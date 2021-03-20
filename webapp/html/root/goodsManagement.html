@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root商品管理</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><span class="crumb-name">商品管理</span></div>
+            </div>
+            <div class="search-wrap">
+                <div class="search-content">
+                    <form action="#" method="post">
+                        <table class="search-tab">
+                            <tr>
+                                <th width="70">关键字:</th>
+                                <td><input class="common-text" placeholder="请输入关键字" name="keyWords" id="keyWords" type="text"></td>
+                                <td><input class="btn btn-primary btn2" id="select" name="select" value="查询" type="button"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="result-wrap">
+                <form>
+                    <div class="result-title">
+                        <div class="result-list">
+                            <a href="./goodsAdd.html"><i class="icon-font"></i>新增商品</a>
+                            <a href="#" id="printGoodsTable"><i class="icon-font"></i>导出商品</a>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <table id="goodsTable" class="result-tab" width="100%">
+                            <tr>
+                                <th>sku</th>
+                                <th>品名</th>
+                                <th>件数</th>
+                                <th>装箱数量</th>
+                                <th>总数量</th>
+                                <th>单价</th>
+                                <th>总价</th>
+                                <th>单件重量</th>
+                                <th>总重量</th>
+                                <th>箱规（长*宽*高）</th>
+                                <th>单件体积</th>
+                                <th>总体</th>
+                                <th>材质</th>
+                                <th>条码</th>
+                                <th>操作</th>
+                            </tr>
+                        </table>
+                        <div class="list-page" id="list-page"> {{x}} 条 {{n}}/{{m}} 页</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script src="../../js/tableExport.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+
+            refreshAjax('/selectAllGoods', {})
+            $('#select').click(function() {
+                refreshAjax('/selectGoods', {
+                    keyWords : $('#keyWords').val()
+                })
+            })
+            $('#printGoodsTable').click(function() { 
+                $("#goodsTable").tableExport({
+                    type : "excel", 
+                    escape : "false",
+                    fileName: "商品库存信息"
+                })
+            })
+        })
+        function refreshAjax(url, data) {
+            $.ajax({
+                url:'http://8.136.96.233:80/warehouse' + url,
+                dataType:'JSON',
+                data: data,
+                type:'POST',
+                success:function(goodsPageInfo){
+                    $('#goodsTable').html('<table id="badPageTable" class="result-tab" width="100%">'
+                                + '<tr>'
+                                +     '<th>sku</th>'
+                                +     '<th>品名</th>'
+                                +     '<th>件数</th>'
+                                +     '<th>装箱数量</th>'
+                                +     '<th>总数量</th>'
+                                +     '<th>单价</th>'
+                                +     '<th>总价</th>'
+                                +     '<th>单件重量</th>'
+                                +     '<th>总重量</th>'
+                                +     '<th>箱规（长*宽*高）</th>'
+                                +     '<th>单件体积</th>'
+                                +     '<th>总体</th>'
+                                +     '<th>材质</th>'
+                                +     '<th>条码</th>'
+                                +     '<th>操作</th>'
+                                + '</tr>'
+                        + '</table>')
+                    let count = 0
+                    for(let index in goodsPageInfo){
+                        $('#goodsTable').append('<tr>'
+                            + '<td>' + goodsPageInfo[index].goodsSku + '</td>' 
+                            + '<td>' + goodsPageInfo[index].goodsName + '</td>'
+                            + '<td>' + goodsPageInfo[index].goodsNumberEachBox + '</td>'
+                            + '<td>' + goodsPageInfo[index].goodsBoxNumber + '</td>'
+                            + '<td>' + goodsPageInfo[index].goodsSumNumber + '</td>'
+                            + '<td>' + (goodsPageInfo[index].goodsEachPrice).toFixed(2) + '</td>'
+                            + '<td>' + (goodsPageInfo[index].goodsSumPrice).toFixed(2) + '</td>'
+                            + '<td>' + (goodsPageInfo[index].goodsEachWeight).toFixed(2) + '</td>'
+                            + '<td>' + (goodsPageInfo[index].goodsSumWeight).toFixed(2) + '</td>'
+                            + '<td>' + goodsPageInfo[index].boxLength  + '*' +  goodsPageInfo[index].boxWidth + '*' + goodsPageInfo[index].boxHeight + '</td>'
+                            + '<td>' + (goodsPageInfo[index].goodsEachVolume).toFixed(2) + '</td>'
+                            + '<td>' + (goodsPageInfo[index].goodsSumVolume).toFixed(2) + '</td>'
+                            + '<td>' + goodsPageInfo[index].goodsMaterial + '</td>'
+                            + '<td>' + goodsPageInfo[index].goodsBarCode + '</td>'
+                            + '<td>'
+                                + '<input class="btn btn-info btn2" id="modify_' + (count + 1) + '" value="修改" type="button"> '
+                                + '<input class="btn btn-danger btn2" id="delete_' + (count + 1) + '" value="删除" type="button">'
+                            + '</td>'
+                            + '</tr>')
+                            count++
+                    }
+                    for(let i = 0; i < count; i++) {
+                        $('#modify_' + (i + 1)).click(function() {
+                            let goodsSku = $('#goodsTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            $.cookie('goodsSku', goodsSku)
+                            isCanModify(goodsSku)
+                        }) 
+                        $('#delete_' + (i + 1)).click(function() {
+                            let goodsSku = $('#goodsTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            deleteBad(goodsSku)
+                        })
+                    }
+                    $('.list-page').text(count + '条 1 / 1页')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function deleteBad(goodsSku) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse/deleteGoods',
+                dataType: 'JSON',
+                data: {goodsSku : goodsSku},
+                type: 'POST',
+                success: function(msg){
+                    if(msg.isSuccess) {
+                        alert(msg.successMsg)
+                    } else {
+                        alert(msg.errorMsg)
+                    }
+                    $(location).attr('href', './goodsManagement.html')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function isCanModify(goodsSku) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse/goodsIsCanModify',
+                dataType: 'JSON',
+                data: {goodsSku : goodsSku},
+                type: 'POST',
+                success: function(goodsIsCanModifyMsg){
+                    if(goodsIsCanModifyMsg.isSuccess) {
+                        $(location).attr('href', './modifyGoods.html')
+                    } else {
+                        alert(goodsIsCanModifyMsg.errorMsg)
+                    }
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root供应商管理</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><span class="crumb-name">供应商管理</span></div>
+            </div>
+            <div class="search-wrap">
+                <div class="search-content">
+                    <form action="#" method="post">
+                        <table class="search-tab">
+                            <tr>
+                                <th width="70">关键字:</th>
+                                <td><input class="common-text" placeholder="请输入关键字" name="keyWords" id="keyWords" type="text"></td>
+                                <td><input class="btn btn-primary btn2" id="select" name="select" value="查询" type="button"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="result-wrap">
+                <form>
+                    <div class="result-title">
+                        <div class="result-list">
+                            <a href="./supplierAdd.html"><i class="icon-font"></i>新增供应商信息</a>
+                            <a id="printSupplierTable" href="#"><i class="icon-font"></i>导出供应商信息</a>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <table id="SupplierTable" class="result-tab" width="100%">
+                            <tr>
+                                <th>供应商ID</th>
+                                <th>供应商名称</th>
+                                <th>操作</th>
+                            </tr>
+                        </table>
+                        <div class="list-page" id="list-page"> {{x}} 条 {{n}}/{{m}} 页</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script src="../../js/tableExport.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+
+            refreshAjax('/selectAllSupplier', {})
+            $('#select').click(function() {
+                refreshAjax('/selectSupplier', {keyWords : $('#keyWords').val()})
+            })
+
+            $('#printSupplierTable').click(function() { 
+                $("#SupplierTable").tableExport({
+                    type : "excel", 
+                    escape : "false",
+                    fileName: "供应商信息"
+                })
+            })
+        })
+        function refreshAjax(url, data) {
+            $('#SupplierTable').html('<table id="SupplierTable" class="result-tab" width="100%">'
+                                    +    '<tr>'
+                                    +        '<th>供应商ID</th>'
+                                    +        '<th>供应商名称</th>'
+                                    +        '<th>操作</th>'
+                                    +    '</tr>'
+                                    +'</table>')
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(supplierInfoMsg){
+                    let count = 0
+                    for(let index in supplierInfoMsg){
+                        $('#SupplierTable').append('<tr>'
+                            + '<td>' + supplierInfoMsg[index].supplierId + '</td>'
+                            + '<td>' + supplierInfoMsg[index].supplierName + '</td>' 
+                            + '<td>'
+                                + '<input class="btn btn-info btn2" id="modify_' + (count + 1) + '" value="修改" type="button"> '
+                                + '<input class="btn btn-danger btn2" id="delete_' + (count + 1) + '" value="删除" type="button">'
+                            + '</td>'
+                            + '</tr>')
+                        count++
+                    }
+                    for(let i = 0; i < count; i++) {
+                        $('#modify_' + (i + 1)).click(function() {
+                            let supplierId = $('#SupplierTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            $.cookie('supplierId', supplierId); 
+                            $(location).attr('href', './modifySupplier.html')
+                        }) 
+                        $('#delete_' + (i + 1)).click(function() {
+                            let supplierId = $('#SupplierTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            deleteManager(supplierId)
+                        })
+                    }
+                    $('.list-page').text(count + '条 1 / 1页')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function deleteManager(supplierId) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse/deleteSupplier',
+                dataType: 'JSON',
+                data: {supplierId : supplierId},
+                type: 'POST',
+                success: function(msg){
+                    if(msg.isSuccess) {
+                        alert(msg.successMsg)
+                    } else {
+                        alert(msg.errorMsg)
+                    }
+                    $(location).attr('href', './supplierManagement.html')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root退货单管理</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list">
+                    <a href="badsManagement.html">
+                        <i class="icon-font"></i><span class="crumb-name">退货单管理</span>
+                    </a>
+                </div>
+            </div>
+            <div class="search-wrap">
+                <div class="search-content">
+                    <form>
+                        <table class="search-tab">
+                            <tr>
+                                <th width="70">关键字:</th>
+                                <td><input class="common-text" placeholder="请输入关键字" name="keyWords" id="keyWords" type="text"></td>
+                                <td><input class="btn btn-primary btn2" id="select" name="select" value="查询" type="button"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="result-wrap">
+                <form name="myform" method="post">
+                    <div class="result-title">
+                        <div class="result-list">
+                            <a id="printBadTable">
+                                <i class="icon-font"></i><span>导出退货单</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <table id="badPageTable" class="result-tab" width="100%">
+                            <tr>
+                                <th>退货单ID</th>
+                                <th>订单ID</th>
+                                <th>商品sku</th>
+                                <th>商品名称</th>
+                                <th>损坏箱数</th>
+                                <th>损坏描述</th>
+                                <th>处理人</th>
+                                <th>操作</th>
+                            </tr>
+                        </table>
+                        <div class="list-page" id="list-page"> {{x}} 条 {{n}}/{{m}} 页</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script src="../../js/tableExport.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+            
+            refreshAjax('/selectAllBad', {})
+            $('#select').click(function() {
+                refreshAjax('/selectBad', {keyWords : $('#keyWords').val()})
+            })
+            $('#printBadTable').click(function() { 
+                $("#badPageTable").tableExport({
+                    type : "excel", 
+                    escape : "false",
+                    fileName: "退货单"
+                })
+            })
+        })
+        function refreshAjax(url, data) {
+            $('#badPageTable').html('<table id="badPageTable" class="result-tab" width="100%">'
+                            + '<tr>'
+                            +    '<th>退货单ID</th>'
+                            +    '<th>订单ID</th>'
+                            +    '<th>商品sku</th>'
+                            +    '<th>商品名称</th>'
+                            +    '<th>损坏箱数</th>'
+                            +    '<th>损坏描述</th>'
+                            +    '<th>处理人</th>'
+                            +    '<th>操作</th>'
+                            + '</tr>'
+                    + '</table>')
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(badPageInfo){
+                    let count = 0
+                    for(let index in badPageInfo){
+                        $('#badPageTable').append('<tr>'
+                            + '<td>' + badPageInfo[index].badId + '</td>' 
+                            + '<td>' + badPageInfo[index].orderId + '</td>'
+                            + '<td>' + badPageInfo[index].goodsSku + '</td>'
+                            + '<td>' + badPageInfo[index].goodsName + '</td>'
+                            + '<td>' + badPageInfo[index].badBoxNumber + '</td>'
+                            + '<td>' + badPageInfo[index].badDecoration + '</td>'
+                            + '<td>' + badPageInfo[index].managerName + '</td>'
+                            + '<td>'
+                                + '<input class="btn btn-info btn2" id="modify_' + (count + 1) + '" value="修改" type="button"> '
+                                + '<input class="btn btn-danger btn2" id="delete_' + (count + 1) + '" value="删除" type="button">'
+                            + '</td>'
+                            + '</tr>')
+                        count++
+                    }
+                    for(let i = 0; i < count; i++) {
+                        $('#modify_' + (i + 1)).click(function() {
+                            let badId = $('#badPageTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            $.cookie('badId', badId); 
+                            $(location).attr('href', './modifyBad.html')
+                        }) 
+                        $('#delete_' + (i + 1)).click(function() {
+                            let badId = $('#badPageTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            deleteBad(badId)
+                        })
+                    }
+                    $('.list-page').text(count + '条 1 / 1页')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function deleteBad(badId) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse/deleteBad',
+                dataType: 'JSON',
+                data: {badId : badId},
+                type: 'POST',
+                success: function(msg){
+                    if(msg.isSuccess) {
+                        alert(msg.successMsg)
+                    } else {
+                        alert(msg.errorMsg)
+                    }
+                    $(location).attr('href', './badsManagement.html')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

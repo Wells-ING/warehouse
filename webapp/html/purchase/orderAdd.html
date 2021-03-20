@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>purchase商品添加</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><a href="./orderManagement.html">订单管理</a><span class="crumb-step">&gt;</span><span>新增订单</span></div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form action="http://8.136.96.233:80/warehouse/OrderGoods" method="post" id="myform" name="myform">
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>sku</th>
+                                    <td>
+                                        <input class="common-text required" id="goodsSku" name="goodsSku" size="50" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>品名</th>
+                                    <td><input class="common-text" id="goodsName" name="goodsName" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>件数</th>
+                                    <td><input class="common-text" id="goodsNumberEachBox" name="goodsNumberEachBox" size="50" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <th>单价</th>
+                                    <td><input class="common-text" id="goodsEachPrice" name="goodsEachPrice" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>单件重量</th>
+                                    <td><input class="common-text" id="goodsEachWeight" name="goodsEachWeight" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>材质</th>
+                                    <td><input class="common-text" id="goodsMaterial" name="goodsMaterial" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>条码</th>
+                                    <td><input class="common-text" id="goodsBarCode" name="goodsBarCode" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>箱规（长*宽*高）</th>
+                                    <td>
+                                        <input class="common-text" id="boxLength" name="boxLength" size="10" type="text"> cm * 
+                                        <input class="common-text" id="boxWidth" name="boxWidth" size="10" type="text"> cm *
+                                        <input class="common-text" id="boxHeight" name="boxHeight" size="10" type="text"> cm
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>装箱数量</th>
+                                    <td><input class="common-text" id="goodsBoxNumber" name="goodsBoxNumber" size="50" type="number"></td>
+                                </tr>
+                                
+                                <tr>
+                                    <th>定金</th>
+                                    <td><input class="common-text" id="orderDeposit" name="orderDeposit" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>运费</th>
+                                    <td><input class="common-text" id="orderFreight" name="orderFreight" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>供应商名称</th>
+                                    <td><input class="common-text" id="supplierName" name="supplierName" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>下单时间</th>
+                                    <td><input class="common-text" id="orderTime" name="orderTime" size="50" type="datetime-local" step="01"></td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" type="button" id="submit">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="取消" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            
+            $(".topbar-all").load("topbar.html")
+            $(".sidebar-wrap").load("sidebar.html")
+            
+
+            $('#goodsSku').change(function() {
+                $.ajax({
+                    url:'http://8.136.96.233:80/warehouse/goodsData',
+                    dataType:'JSON',
+                    data: {goodsSku : $('#goodsSku').val()},
+                    type:'POST',
+                    success:function(req){
+                        if(req.goodsName !== undefined) {
+                            $('#goodsName').val(req.goodsName)
+                            $('#goodsName').attr('disabled', 'disabled')
+                            $('#goodsNumberEachBox').val(req.goodsNumberEachBox)
+                            $('#goodsNumberEachBox').attr('disabled', 'disabled')
+                            $('#goodsEachPrice').val(req.goodsEachPrice)
+                            $('#goodsEachPrice').attr('disabled', 'disabled')
+                            $('#goodsEachWeight').val(req.goodsEachWeight)
+                            $('#goodsEachWeight').attr('disabled', 'disabled')
+                            $('#boxLength').val(req.boxLength)
+                            $('#boxLength').attr('disabled', 'disabled')
+                            $('#boxWidth').val(req.boxWidth)
+                            $('#boxWidth').attr('disabled', 'disabled')
+                            $('#boxHeight').val(req.boxHeight)
+                            $('#boxHeight').attr('disabled', 'disabled')
+                            $('#goodsMaterial').val(req.goodsMaterial)
+                            $('#goodsMaterial').attr('disabled', 'disabled')
+                            $('#goodsBarCode').val(req.goodsBarCode)
+                            $('#goodsBarCode').attr('disabled', 'disabled')
+                        }
+                    },
+                    error:function(){
+                        alert('error in request')
+                    }
+                })
+            })
+            $('#submit').click(function() {
+                let data = {
+                    goodsSku : $('#goodsSku').val(),
+                    goodsName : $('#goodsName').val(),
+                    goodsNumberEachBox : $('#goodsNumberEachBox').val(),
+                    goodsEachPrice : $('#goodsEachPrice').val(),
+                    goodsEachWeight : $('#goodsEachWeight').val(),
+                    goodsMaterial : $('#goodsMaterial').val(),
+                    goodsBarCode : $('#goodsBarCode').val(),
+                    boxLength : $('#boxLength').val(),
+                    boxWidth : $('#boxWidth').val(),
+                    boxHeight : $('#boxHeight').val(),
+                    goodsBoxNumber : $('#goodsBoxNumber').val(),
+                    orderDeposit : $('#orderDeposit').val(),
+                    orderFreight : $('#orderFreight').val(),
+                    supplierName : $('#supplierName').val(),
+                    orderTime : $('#orderTime').val()
+                }
+                $.ajax({
+                    url: 'http://8.136.96.233:80/warehouse/orderGoods',
+                    dataType: 'JSON',
+                    data: data,
+                    type: 'POST',
+                    success: function(orderAddMsg){
+                        if(orderAddMsg.isSuccess) {
+                            alert(orderAddMsg.successMsg)
+                            $(location).attr('href', './orderManagement.html')
+                        } else {
+                            alert(orderAddMsg.errorMsg)
+                            $(location).attr('href', './orderAdd.html')
+                        }
+                    },
+                    error:function(){
+                        alert('error in request')
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

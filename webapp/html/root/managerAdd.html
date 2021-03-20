@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root商品添加</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><a class="crumb-name" href="../managerManagement.html">管理员管理</a><span class="crumb-step">&gt;</span><span>新增管理员</span></div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form>
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>类型</th>
+                                    <td>
+                                        <select name="manType" id="manType">
+                                            <option value="0">请选择管理员类型</option>
+                                            <option value="2">采购管理员</option>
+                                            <option value="3">出库管理员</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>名称</th>
+                                    <td><input class="common-text" id="manName" name="manName" size="50" value="" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>密码</th>
+                                    <td><input class="common-text" id="manPwd" name="manPwd" size="50" value="" type="password"></td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" type="button" id="submit">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="返回" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+
+            $('#submit').click(function() {
+                let data = {
+                    manType : $('#manType').val(),
+                    manName : $('#manName').val(),
+                    manPwd : $('#manPwd').val()
+                }
+                $.ajax({
+                    url: 'http://8.136.96.233:80/warehouse/managerAdd',
+                    dataType: 'JSON',
+                    data: data,
+                    type: 'POST',
+                    success: function(managerAddMsg){
+                        if(managerAddMsg.isSuccess) {
+                            alert(managerAddMsg.successMsg)
+                            $(location).attr('href', './managerManagement.html')
+                        } else {
+                            alert(managerAddMsg.errorMsg)
+                            $(location).attr('href', './managerAdd.html')
+                        }
+                    },
+                    error:function(){
+                        alert('error in request')
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

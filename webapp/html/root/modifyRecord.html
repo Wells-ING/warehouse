@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root修改记录</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <style>
+        .detail {
+            font-size: 10px;
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><a class="crumb-name" href="./badsManagement.html">退货单管理</a><span class="crumb-step">&gt;</span><span>修改退货单</span></div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form>
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>入/出库记录ID</th>
+                                    <td><input class="common-text" id="recordId" name="recordId" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>商品sku</th>
+                                    <td><input class="common-text" id="goodsSku" name="goodsSku" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>商品名称</th>
+                                    <td><input class="common-text" id="goodsName" name="goodsName" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>入/出库数量</th>
+                                    <td><input class="common-text" id="goodsNumber" name="goodsNumber" size="50" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <th>入/出库类别</th>
+                                    <td><input class="common-text" id="recordType" name="recordType" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>处理人</th>
+                                    <td><input class="common-text" id="manName" name="manName" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>入/出库时间</th>
+                                    <td><input class="common-text" id="recordTime" name="recordTime" size="50" type="datetime-local" step="01"></td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" id="submit" type="button">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="返回" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+            
+            let showRecordData = {
+                recordId : $.cookie('recordId')
+            }
+            showRecordDataAjax('/showRecordData', showRecordData)
+            $('#submit').click(function() {
+                let modifyRecordData = {
+                    recordId : $('#recordId').val(),
+                    goodsSku : $('#goodsSku').val(),
+                    goodsName : $('#goodsName').val(),
+                    goodsNumber : $('#goodsNumber').val(),
+                    recordType : $('#recordType').val(),
+                    manName : $('#manName').val(),
+                    recordTime : $('#recordTime').val()
+                }
+                modifyRecordAjax('/modifyRecord', modifyRecordData)
+            })
+        })
+        function modifyRecordAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(modifyRecordMsg){
+                    if(modifyRecordMsg.isModifySuccess) {
+                        alert(modifyRecordMsg.successMsg)
+                        $(location).attr('href', './recordManagement.html')
+                    } else {
+                        if(!modifyRecordMsg.isTrueBoxNumber) {
+                            alert(modifyRecordMsg.falseBoxNumberMsg)
+                        } else {
+                            if(!modifyRecordMsg.isExitOfManager) {
+                                alert(modifyRecordMsg.falseManagerMsg)
+                            }
+                        }
+                        $(location).attr('href', './modifyRecord.html')
+                    }
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function showRecordDataAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(modifyRecorcMsg){
+                    $('#recordId').val(modifyRecorcMsg.recordId)
+                    $('#recordId').attr('disabled', 'disabled')
+                    $('#goodsSku').val(modifyRecorcMsg.goodsSku)
+                    $('#goodsSku').attr('disabled', 'disabled')
+                    $('#goodsName').val(modifyRecorcMsg.goodsName)
+                    $('#goodsName').attr('disabled', 'disabled')
+                    $('#goodsNumber').val(modifyRecorcMsg.goodsNumber)
+                    $('#recordType').val(modifyRecorcMsg.recordType)
+                    $('#recordType').attr('disabled', 'disabled')
+                    $('#manName').val(modifyRecorcMsg.manName)
+                    let recordTimeArr = (modifyRecorcMsg.recordTime).split(' ')
+                    $('#recordTime').val(recordTimeArr[0] + 'T' + recordTimeArr[1])
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

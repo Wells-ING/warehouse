@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root修改商品</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <style>
+        .detail {
+            font-size: 10px;
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><a class="crumb-name" href="./goodsManagement.html">商品管理</a><span class="crumb-step">&gt;</span><span>修改商品</span></div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form>
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>商品sku</th>
+                                    <td><input class="common-text" id="goodsSku" name="goodsSku" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>商品名称</th>
+                                    <td><input class="common-text" id="goodsName" name="goodsName" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>商品件数</th>
+                                    <td><input class="common-text" id="goodsNumberEachBox" name="goodsNumberEachBox" size="50" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <th>商品单价</th>
+                                    <td><input class="common-text" id="goodsEachPrice" name="goodsEachPrice" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>单件重量</th>
+                                    <td><input class="common-text" id="goodsEachWeight" name="goodsEachWeight" size="50" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <th>材质</th>
+                                    <td><input class="common-text" id="goodsMaterial" name="goodsMaterial" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>条码</th>
+                                    <td><input class="common-text" id="goodsBarCode" name="goodsBarCode" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th>箱规（长*宽*高）</th>
+                                    <td>
+                                        <input class="common-text" id="boxLength" name="boxLength" size="10" type="text"> cm * 
+                                        <input class="common-text" id="boxWidth" name="boxWidth" size="10" type="text"> cm *
+                                        <input class="common-text" id="boxHeight" name="boxHeight" size="10" type="text"> cm
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" id="submit" type="button">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="返回" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+            
+            let showGoodsData = {
+                goodsSku : $.cookie('goodsSku')
+            }
+            showGoodsDataAjax('/showGoodsData', showGoodsData)
+            $('#submit').click(function() {
+                let modifyGoodsData = {
+                    goodsSku : $('#goodsSku').val(),
+                    goodsName : $('#goodsName').val(),
+                    goodsNumberEachBox : $('#goodsNumberEachBox').val(),
+                    goodsEachPrice : $('#goodsEachPrice').val(),
+                    goodsEachWeight : $('#goodsEachWeight').val(),
+                    goodsMaterial : $('#goodsMaterial').val(),
+                    goodsBarCode : $('#goodsBarCode').val(),
+                    boxLength : $('#boxLength').val(),
+                    boxWidth : $('#boxWidth').val(),
+                    boxHeight : $('#boxHeight').val()
+                }
+                modifyGoodsAjax('/modifyGoods', modifyGoodsData)
+            })
+        })
+        function modifyGoodsAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(modifyGoodsMsg){
+                    if(modifyGoodsMsg.isModifySuccess) {
+                        alert(modifyGoodsMsg.successMsg)
+                        $(location).attr('href', './goodsManagement.html')
+                    } else {
+                        alert(modifyGoodsMsg.errorMsg)
+                        $(location).attr('href', './modifyGoods.html')
+                    }
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function showGoodsDataAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(modifyGoodsMsg){
+                    $('#goodsSku').val(modifyGoodsMsg.goodsSku)
+                    $('#goodsSku').attr('disabled', 'disabled')
+                    $('#goodsName').val(modifyGoodsMsg.goodsName)
+                    $('#goodsNumberEachBox').val(modifyGoodsMsg.goodsNumberEachBox)
+                    $('#goodsEachPrice').val(modifyGoodsMsg.goodsEachPrice)
+                    $('#goodsEachWeight').val(modifyGoodsMsg.goodsEachWeight)
+                    $('#goodsMaterial').val(modifyGoodsMsg.goodsMaterial)
+                    $('#goodsBarCode').val(modifyGoodsMsg.goodsBarCode)
+                    $('#boxLength').val(modifyGoodsMsg.boxLength)
+                    $('#boxWidth').val(modifyGoodsMsg.boxWidth)
+                    $('#boxHeight').val(modifyGoodsMsg.boxHeight)
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

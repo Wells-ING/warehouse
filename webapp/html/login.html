@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>管理员登录</title>
+
+	<link rel="stylesheet" type="text/css" href="../css/index.css" />
+</head>
+<body>
+	<img class="bg" src="../img/body_background.jpg" />
+	<img class="pic" src="../img/login_aside.png" />
+	<div class="table">
+		<div class="title">仓库管理系统登录</div>
+		<div class="subheading">Warehouse Management System</div>
+		<form action="" method="">
+			<div class="type">
+				<div class="user"><img src="../img/icon_type.png" /></div>
+				<select id="manType">
+					<option value="">请选择管理员类型</option>
+					<option value="1" selected>超级管理员</option>
+					<option value="2">采购管理员</option>
+					<option value="3">出库管理员</option>
+				</select>
+			</div>
+			<div class="userid">
+				<div class="user"><img src="../img/icon_username.png" /></div>
+				<input type="text" id="manId" placeholder="请输入管理员ID" />
+			</div>			
+			<div class="password">
+				<div class="user"><img src="../img/icon_password.png" /></div>
+				<input type="password" id="manPwd" placeholder="请输入密码"/>
+			</div>
+			<input type="button" id="login" class="btn" value="登陆"/>
+		</form>
+	</div>
+	<script src="../js/jquery2.1.1.js" ></script>
+	<script>
+		$(document).ready(function() {
+			$('#login').click(function() {
+				$.ajax({
+					url: 'http://8.136.96.233:80/warehouse/login',
+					dataType: 'JSON',
+					data: {manType : $('#manType').val(), manId : $('#manId').val(), manPwd : $('#manPwd').val()},
+					type: 'POST',
+					success: function(loginMsg) {
+						if(loginMsg.isLogin) {
+							alert(loginMsg.successMsg)
+						} else {
+							alert(loginMsg.errorMsg)
+						}
+						$(location).attr('href', loginMsg.nextPage);
+					},
+					error: function() {
+						alert('请输入完整登陆信息')
+					}
+				})
+			})
+		})
+	</script>
+</body>
+</html>

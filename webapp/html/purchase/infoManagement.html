@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>purchase修改密码</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i>修改密码</div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form action="http://8.136.96.233:80/warehouse/purchaseModifyPassword" method="post" id="myform" name="myform">
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>原密码</th>
+                                    <td>
+                                        <input class="common-text required" id="title" name="oldPassword" size="50" value="" type="password">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>新密码</th>
+                                    <td><input class="common-text" name="newPassword" size="50" value="" type="password"></td>
+                                </tr>
+                                <tr>
+                                    <th>确认密码</th>
+                                    <td><input class="common-text" name="confirmPassword" size="50" value="" type="password"></td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" type="submit">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="返回" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".topbar-all").load("topbar.html")
+            $(".sidebar-wrap").load("sidebar.html")
+        })
+    </script>
+</body>
+</html>

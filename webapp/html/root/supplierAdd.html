@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root供应商添加</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><a class="crumb-name" href="../supplierManagement.html">供应商管理</a><span class="crumb-step">&gt;</span><span>新增供应商信息</span></div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form>
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>名称</th>
+                                    <td>
+                                        <input class="common-text required" id="supplierName" name="supplierName" size="50" type="text">
+                                    </td>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" type="button" id="submit">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="返回" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+
+            $('#submit').click(function() {
+                let data = {
+                    supplierName : $('#supplierName').val()
+                }
+                $.ajax({
+                    url: 'http://8.136.96.233:80/warehouse/supplierAdd',
+                    dataType: 'JSON',
+                    data: data,
+                    type: 'POST',
+                    success: function(supplierAddMsg){
+                        if(supplierAddMsg.isSuccess) {
+                            alert(supplierAddMsg.successMsg)
+                            $(location).attr('href', './supplierManagement.html')
+                        } else {
+                            alert(supplierAddMsg.errorMsg)
+                            $(location).attr('href', './supplierAdd.html')
+                        }
+                    },
+                    error:function(){
+                        alert('error in request')
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

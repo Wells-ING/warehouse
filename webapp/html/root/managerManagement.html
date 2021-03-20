@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root管理员管理</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><span class="crumb-name">管理员管理</span></div>
+            </div>
+            <div class="search-wrap">
+                <div class="search-content">
+                    <form action="#" method="post">
+                        <table class="search-tab">
+                            <tr>
+                                <th width="70">关键字:</th>
+                                <td><input class="common-text" placeholder="请输入关键字" name="keyWords" id="keyWords" type="text"></td>
+                                <td><input class="btn btn-primary btn2" id="select" name="select" value="查询" type="button"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="result-wrap">
+                <form >
+                    <div class="result-title">
+                        <div class="result-list">
+                            <a href="./managerAdd.html"><i class="icon-font"></i>新增管理员</a>
+                            <a id="printManagerTable" href="#"><i class="icon-font"></i>导出管理员信息</a>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <table class="result-tab" id="ManagerTable">
+                            <tr>
+                                <th>管理员ID</th>
+                                <th>管理员类别</th>
+                                <th>管理员姓名</th>
+                                <th>管理员密码</th>
+                                <th>操作</th>
+                            </tr>
+                        </table>
+                        <div class="list-page" id="list-page"> {{x}} 条 {{n}}/{{m}} 页</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script src="../../js/tableExport.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+
+            refreshAjax('/selectAllManager', {})
+            $('#select').click(function() {
+                refreshAjax('/selectManager', {keyWords : $('#keyWords').val()})
+            })
+
+            $('#printManagerTable').click(function() { 
+                $("#ManagerTable").tableExport({
+                    type : "excel", 
+                    escape : "false",
+                    fileName: "管理员信息"
+                })
+            })
+        })
+        function refreshAjax(url, data) {
+            $('#ManagerTable').html('<table class="result-tab" id="ManagerTable">'
+                                + '<tr>'
+                                +    '<th>管理员ID</th>'
+                                +    '<th>管理员类别</th>'
+                                +    '<th>管理员姓名</th>'
+                                +    '<th>管理员密码</th>'
+                                +    '<th>操作</th>'
+                                + '</tr>'
+                            + '</table>')
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(managerInfoMsg){
+                    let count = 0
+                    for(let index in managerInfoMsg){
+                        $('#ManagerTable').append('<tr>'
+                            + '<td>' + managerInfoMsg[index].manId + '</td>'
+                            + '<td>' + managerInfoMsg[index].manType + '</td>' 
+                            + '<td>' + managerInfoMsg[index].manName + '</td>'
+                            + '<td>' + managerInfoMsg[index].manPassword + '</td>'
+                            + '<td>'
+                                + '<input class="btn btn-info btn2" id="modify_' + (count + 1) + '" value="修改" type="button"> '
+                                + '<input class="btn btn-danger btn2" id="delete_' + (count + 1) + '" value="删除" type="button">'
+                            + '</td>'
+                            + '</tr>')
+                        count++
+                    }
+                    for(let i = 0; i < count; i++) {
+                        $('#modify_' + (i + 1)).click(function() {
+                            let manId = $('#ManagerTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            $.cookie('manId', manId); 
+                            $(location).attr('href', './modifyManager.html')
+                        }) 
+                        $('#delete_' + (i + 1)).click(function() {
+                            let manId = $('#ManagerTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            deleteManager(manId)
+                        })
+                    }
+                    $('.list-page').text(count + '条 1 / 1页')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function deleteManager(managerId) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse/deleteManager',
+                dataType: 'JSON',
+                data: {managerId : managerId},
+                type: 'POST',
+                success: function(msg){
+                    if(msg.isSuccess) {
+                        alert(msg.successMsg)
+                    } else {
+                        alert(msg.errorMsg)
+                    }
+                    $(location).attr('href', './managerManagement.html')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

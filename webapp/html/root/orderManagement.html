@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root订单管理</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><span class="crumb-name">订单管理</span></div>
+            </div>
+            <div class="search-wrap">
+                <div class="search-content">
+                    <form action="#" method="post">
+                        <table class="search-tab">
+                            <tr>
+                                <th width="70">关键字:</th>
+                                <td><input class="common-text" placeholder="请输入关键字" name="keyWords" id="keyWords" type="text"></td>
+                                <td><input class="btn btn-primary btn2" id="select" name="select" value="查询" type="button"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="result-wrap">
+                <form name="myform" id="myform" method="post">
+                    <div class="result-title">
+                        <div class="result-list">
+                            <a id="printOrderTable" href="#"><i class="icon-font"></i>导出订单</a>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <table id="orderPageTable" class="result-tab" width="100%">
+                            <tr>
+                                <th>订单ID</th>
+                                <th>sku</th>
+                                <th>品名</th>
+                                <th>件数</th>
+                                <th>装箱数量</th>
+                                <th>总数量</th>
+                                <th>单价</th>
+                                <th>总价</th>
+                                <th>运费</th>
+                                <th>定金</th>
+                                <th>总金额</th>
+                                <th>供应商名称</th>
+                                <th>下单时间</th>
+                                <th>订单状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </table>
+                        <div class="list-page" id="list-page"> {{x}} 条 {{n}}/{{m}} 页</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script src="../../js/tableExport.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+            
+            refreshAjax('/selectAllOrder', {})
+            $('#select').click(function() {
+                refreshAjax('/selectOrder', {keyWords : $('#keyWords').val()})
+            })
+            $('#printOrderTable').click(function() { 
+                $("#orderPageTable").tableExport({
+                    type : "excel", 
+                    escape : "false",
+                    fileName: "订单表"
+                })
+            })
+        })
+        function refreshAjax(url, data) {
+            $('#orderPageTable').html('<table id="orderPageTable" class="result-tab" width="100%">'
+                    + '<tr>'
+                        +    '<th>订单ID</th>'
+                        +    '<th>sku</th>'
+                        +    '<th>品名</th>'
+                        +    '<th>件数</th>'
+                        +    '<th>装箱数量</th>'
+                        +    '<th>总数量</th>'
+                        +    '<th>单价</th>'
+                        +    '<th>总价</th>'
+                        +    '<th>运费</th>'
+                        +    '<th>定金</th>'
+                        +    '<th>总金额</th>'
+                        +    '<th>供应商名称</th>'
+                        +    '<th>下单时间</th>'
+                        +    '<th>订单状态</th>'
+                        +    '<th>操作</th>'
+                    + '</tr>'
+                + '</table>')
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(orderPageInfo){
+                    let count = 0
+                    for(let index in orderPageInfo){
+                        $('#orderPageTable').append('<tr>'
+                            + '<td>' + orderPageInfo[index].orderId + '</td>' 
+                            + '<td>' + orderPageInfo[index].goodsSku + '</td>'
+                            + '<td>' + orderPageInfo[index].goodsName + '</td>'
+                            + '<td>' + orderPageInfo[index].goodsNumberEachBox + '</td>'
+                            + '<td>' + orderPageInfo[index].orderBoxNumber + '</td>'
+                            + '<td>' + orderPageInfo[index].sumNumber + '</td>'
+                            + '<td>' + orderPageInfo[index].goodsEachPrice + '</td>'
+                            + '<td>' + orderPageInfo[index].goodsSumPrice + '</td>' 
+                            + '<td>' + orderPageInfo[index].orderFreight + '</td>'
+                            + '<td>' + orderPageInfo[index].orderDeposit + '</td>'
+                            + '<td>' + orderPageInfo[index].orderSumPrice + '</td>'
+                            + '<td>' + orderPageInfo[index].supplierName + '</td>'
+                            + '<td>' + orderPageInfo[index].orderTime + '</td>'
+                            + '<td>' + orderPageInfo[index].orderStatus + '</td>'
+                            + '<td>'
+                                + '<input class="btn btn-info btn2" id="modify_' + (count + 1) + '" value="修改" type="button"> '
+                                + '<input class="btn btn-danger btn2" id="delete_' + (count + 1) + '" value="删除" type="button">'
+                            + '</td>'
+                            + '</tr>')
+                        count++
+                    }
+                    for(let i = 0; i < count; i++) {
+                        $('#modify_' + (i + 1)).click(function() {
+                            let orderId = $('#orderPageTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            $.cookie('orderId', orderId); 
+                            $(location).attr('href', './modifyOrder.html')
+                        }) 
+                        $('#delete_' + (i + 1)).click(function() {
+                            let orderId = $('#orderPageTable tr:eq(' + ( i + 1 ) + ') td:eq(0)').html()
+                            deleteOrder(orderId)
+                        })
+                    }
+                    $('.list-page').text(count + '条 1 / 1页')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function deleteOrder(orderId) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse/deleteOrder',
+                dataType: 'JSON',
+                data: {orderId : orderId},
+                type: 'POST',
+                success: function(msg){
+                    if(msg.isSuccess) {
+                        alert(msg.successMsg)
+                    } else {
+                        alert(msg.errorMsg)
+                    }
+                    $(location).attr('href', './orderManagement.html')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

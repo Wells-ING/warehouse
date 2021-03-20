@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root修改退货单</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <style>
+        .detail {
+            font-size: 10px;
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><a class="crumb-name" href="./badsManagement.html">退货单管理</a><span class="crumb-step">&gt;</span><span>修改退货单</span></div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form>
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>退货单ID</th>
+                                    <td><input class="common-text" id="badId" name="badId" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>订单ID</th>
+                                    <td><input class="common-text" id="orderId" name="orderId" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>商品sku</th>
+                                    <td><input class="common-text" id="goodsSku" name="goodsSku" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>商品名称</th>
+                                    <td><input class="common-text" id="goodsName" name="goodsName" size="50" type="text"><span class="detail">&nbsp;&nbsp;不可修改</span></td>
+                                </tr>
+                                <tr>
+                                    <th>损坏箱数</th>
+                                    <td><input class="common-text" id="badBoxNumber" name="badBoxNumber" size="50" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <th>损坏描述</th>
+                                    <td>
+                                        <textarea class="common-text" id="badDecoration" name="badDecoration" cols="50"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>处理人</th>
+                                    <td><input class="common-text" id="managerName" name="managerName" size="50" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" id="submit" type="button">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="返回" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script src="../../js/jquery.cookie.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+            
+            let showBadData = {
+                badId : $.cookie('badId')
+            }
+            showBadDataAjax('/showBadData', showBadData)
+            $('#submit').click(function() {
+                let modifyBadData = {
+                    badId : $('#badId').val(),
+                    orderId : $('#orderId').val(),
+                    badBoxNumber : $('#badBoxNumber').val(),
+                    badDecoration : $('#badDecoration').val(),
+                    managerName : $('#managerName').val()
+                }
+                modifyBadAjax('/modifyBad', modifyBadData)
+            })
+        })
+        function modifyBadAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(modifyBadMsg){
+                    if(modifyBadMsg.isModifySuccess) {
+                        alert(modifyBadMsg.successMsg)
+                        $(location).attr('href', './badsManagement.html')
+                    } else {
+                        if(!modifyBadMsg.isTrueBoxNumber) {
+                            alert(modifyBadMsg.falseBoxNumberMsg)
+                        } else {
+                            if(!modifyBadMsg.isExitOfManager) {
+                                alert(modifyBadMsg.falseManagerMsg)
+                            }
+                        }
+                        $(location).attr('href', './modifyBad.html')
+                    }
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+        function showBadDataAjax(url, data) {
+            $.ajax({
+                url: 'http://8.136.96.233:80/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(modifyBadMsg){
+                    $('#badId').val(modifyBadMsg.badId)
+                    $('#badId').attr('disabled', 'disabled')
+                    $('#orderId').val(modifyBadMsg.orderId)
+                    $('#orderId').attr('disabled', 'disabled')
+                    $('#goodsSku').val(modifyBadMsg.goodsSku)
+                    $('#goodsSku').attr('disabled', 'disabled')
+                    $('#goodsName').val(modifyBadMsg.goodsName)
+                    $('#goodsName').attr('disabled', 'disabled')
+                    $('#managerName').val(modifyBadMsg.managerName)
+                    $('#badBoxNumber').val(modifyBadMsg.badBoxNumber)
+                    $('#badDecoration').val(modifyBadMsg.badDecoration)
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>root主界面</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <style>
+        .main-wrap {
+            text-align: center;
+            line-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <h1 style="font-size: 30px;">
+                {{用户名称}}, 欢迎使用仓库管理系统
+            </h1>
+            <br />
+            <p style="font-size: 25px; ">
+                超级管理员模块
+            </p>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            
+            $(".topbar-all").load("topbar.html")
+            $(".sidebar-wrap").load("sidebar.html")
+            
+            $.ajax({
+                url:'http://8.136.96.233/warehouse/homepage',
+                dataType:'JSON',
+                type:'POST',
+                success:function(req){
+                    $('.main-wrap h1').text(req.name + ', 欢迎使用仓库管理系统')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        })
+    </script>
+</body>
+</html>

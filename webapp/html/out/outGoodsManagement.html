@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>out出库信息管理</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i><span class="crumb-name">出库信息管理</span></div>
+            </div>
+            <div class="search-wrap">
+                <div class="search-content">
+                    <form>
+                        <table class="search-tab">
+                            <tr>
+                                <th width="70">关键字:</th>
+                                <td><input class="common-text" placeholder="请输入关键字" name="keyWords" id="keyWords" type="text"></td>
+                                <td><input class="btn btn-primary btn2" id="submit" name="submit" value="查询" type="button"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="result-wrap">
+                <form>
+                    <div class="result-title">
+                        <div class="result-list">
+                            <a id="printOutRecordPage" href="#"><i class="icon-font"></i>导出出库信息</a>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <table class="result-tab" width="100%" id="outRecordPageTable">
+                            <tr>
+                                <th>记录ID</th>
+                                <th>商品sku</th>
+                                <th>商品名称</th>
+                                <th>出库数量</th>
+                                <th>出库时间</th>
+                            </tr>
+                        </table>
+                        <div class="list-page" id="list-page"> {{x}} 条 {{n}}/{{m}} 页</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.topbar-all').load('topbar.html')
+            $('.sidebar-wrap').load('sidebar.html')
+
+            refreshAjax('/selectAllOutRecord', {})
+            $('#select').click(function() {
+                refreshAjax('/selectOutRecord', {keyWords : $('#keyWords').val()})
+            })
+        })
+        function refreshAjax(url, data) {
+            $('#outRecordPageTable').html('<table class="result-tab" width="100%" id="outRecordPageTable">'
+                                        + '<tr>'
+                                        +    '<th>记录ID</th>'
+                                        +    '<th>商品sku</th>'
+                                        +    '<th>商品名称</th>'
+                                        +    '<th>出库数量</th>'
+                                        +    '<th>出库时间</th>'
+                                        + '</tr>'
+                                        +'</table>')
+            $.ajax({
+                url: 'http://8.136.96.233/warehouse' + url,
+                dataType: 'JSON',
+                data: data,
+                type: 'POST',
+                success: function(recordPageInfo){
+                    let count = 0
+                    for(let index in recordPageInfo){
+                        $('#outRecordPageTable').append('<tr>'
+                                + '<td>' + recordPageInfo[index].recordrId + '</td>'
+                                + '<td>' + recordPageInfo[index].goodsSku + '</td>'
+                                + '<td>' + recordPageInfo[index].goodsName + '</td>'
+                                + '<td>' + recordPageInfo[index].outNumber + '</td>'
+                                + '<td>' + recordPageInfo[index].recordTime + '</td>'
+                                + '</tr>')
+                        count++
+                    }
+                    $('.list-page').text(count + '条 1 / 1页')
+                },
+                error:function(){
+                    alert('error in request')
+                }
+            })
+        }
+    </script>
+</body>
+</html>

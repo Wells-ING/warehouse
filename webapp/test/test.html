@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <script src="../../js/jquery2.1.1.js"></script>
+  <script>
+    $(document).ready(function() {
+
+      $(".topbar-all").load("topbar.html")
+      $(".sidebar-wrap").load("sidebar.html")
+
+      $.ajax({
+        url:'http://8.136.96.233/warehouse/homepage',
+        dataType:'JSON',
+        type:'POST',
+        success:function(req){
+          alert(req.name)
+        },
+        error:function(){
+          alert('error in request')
+        }
+      })
+    })
+  </script>
+</body>
+</html>

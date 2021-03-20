@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>purchase验货</title>
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+    <div class="topbar-all"></div>
+    <div class="container clearfix" >
+        <div class="sidebar-wrap"></div>
+        <div class="main-wrap">
+            <div class="crumb-wrap">
+                <div class="crumb-list"><i class="icon-font"></i>检验商品</div>
+            </div>
+            <div class="result-wrap">
+                <div class="result-content">
+                    <form action="http://8.136.96.233:80/warehouse/CheckGoods" method="post" id="myform" name="myform">
+                        <table class="insert-tab" width="100%">
+                            <tbody>
+                                <tr>
+                                    <th>订单号</th>
+                                    <td>
+                                        <input class="common-text required" id="order_id" name="order_id" size="50" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>订单信息</th>
+                                    <td>
+                                        <table class="insert-tab" width="100%">
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        sku&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="goods_sku" name="goods_sku" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        品名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="goods_name" name="goods_name" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        件数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="goods_numberEachBox" name="goods_numberEachBox" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        装箱数量&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="goods_boxNumber" name="goods_boxNumber" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        单价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="goods_eachPrice" name="goods_eachPrice" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        定金&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="order_deposit" name="order_deposit" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        运费&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="order_freight" name="order_freight" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        供应商名称
+                                                        <input class="common-text required" id="supplier_name" name="supplier_name" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        下单时间&nbsp;&nbsp;&nbsp;
+                                                        <input class="common-text required" id="order_time" name="order_time" size="50" value="" type="text">
+                                                    </td>
+                                                </tr>
+                                            </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>不合格箱数</th>
+                                    <td><input class="common-text" id="bad_boxNumber" name="bad_boxNumber" size="50" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <th>不合格原因</th>
+                                    <td>
+                                        <textarea class="common-text" id="bad_decoration" name="badDecoration" cols="50" rows="50"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <input class="btn btn-primary btn6 mr10" value="提交" type="submit">
+                                        <input class="btn btn6" onClick="history.go(-1)" value="取消" type="button">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../js/jquery2.1.1.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".topbar-all").load("topbar.html");
+            $(".sidebar-wrap").load("sidebar.html");
+
+            $('#order_id').change(function() {
+                $.ajax({
+                    url:'http://8.136.96.233:80/warehouse/OrderData',
+                    dataType:'JSON',
+                    data: {order_id : $('#order_id').val()},
+                    async:true,
+                    type:'POST',
+                    beforeSend:function(){
+                        
+                    },
+                    success:function(req){
+                        $('#goods_sku').val(req.goods_sku)
+                        $('#goods_sku').attr('disabled', 'disabled')
+                        $('#goods_name').val(req.goods_name)
+                        $('#goods_name').attr('disabled', 'disabled')
+                        $('#goods_numberEachBox').val(req.goods_numberEachBox)
+                        $('#goods_numberEachBox').attr('disabled', 'disabled')
+                        $('#goods_boxNumber').val(req.goods_boxNumber)
+                        $('#goods_boxNumber').attr('disabled', 'disabled')
+                        $('#goods_eachPrice').val(req.goods_eachPrice)
+                        $('#goods_eachPrice').attr('disabled', 'disabled')
+                        $('#order_deposit').val(req.order_deposit)
+                        $('#order_deposit').attr('disabled', 'disabled')
+                        $('#order_freight').val(req.order_freight)
+                        $('#order_freight').attr('disabled', 'disabled')
+                        $('#supplier_name').val(req.supplier_name)
+                        $('#supplier_name').attr('disabled', 'disabled')
+                        $('#order_time').val(req.order_time)
+                        $('#order_time').attr('disabled', 'disabled')
+                    },
+                    complete:function(){
+                        
+                    },
+                    error:function(){
+                        alert('请求错误')
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>
